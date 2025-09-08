@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const pool = require('../config/db');
 
 class UserModel {
     static findByUsername(username) {
@@ -7,14 +7,12 @@ class UserModel {
                 if (error) {
                     return reject(error);
                 }
-                const mappedResults = results.map(user => {
-                    return {
-                        id: user.id,
-                        username: user.username,
-                        password: user.password
-                    };
-                })
-                resolve(mappedResults);
+                const mappedResults = results.map(user => ({
+                    id: user.id,
+                    username: user.username,
+                    password: user.password
+                }));
+                resolve(results);
             });
         })
     }
@@ -30,4 +28,5 @@ class UserModel {
         });
     }
 }
+
 module.exports = UserModel;
