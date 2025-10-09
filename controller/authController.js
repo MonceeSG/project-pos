@@ -3,7 +3,7 @@ const { generateToken } = require("../utils/jwt");
 const { hashPassword, comparePassword } = require("../utils/bcrypt");
 
 
-class authController {
+class AuthController {
     static async login(req, res) {
         try {
             const { username, password } = req.body;
@@ -27,11 +27,7 @@ class authController {
 
             res.status(200).json({
                 message: "Login Success",
-                token: token,
-                user: {
-                    id: user[0].id,
-                    username: user[0].username
-                }
+                token: token
             });
         } catch (error) {
             console.error(error);
@@ -64,6 +60,8 @@ class authController {
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
-}
 
-module.exports = authController;
+
+}
+module.exports = AuthController;
+
