@@ -1,3 +1,5 @@
+const { hash } = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const userModel = require('../model/userModel');
 
 class UserController {
@@ -54,7 +56,14 @@ class UserController {
         try {
             const { id } = req.params;
             const { username, password } = req.body;
-            const result = await userModel.updateUser(id, username, password);
+
+            let hashedPassword = null;
+            if (password) {
+                hashedPassword = await bcrypt.hash(password, 10);
+            }
+
+            const result = await userModel.updateUser(id, username, hashedPassword);
+
             if (!result || result.affectedRows === 0) {
                 return res.status(404).json({ message: "User not found" });
             }
