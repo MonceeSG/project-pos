@@ -1,14 +1,17 @@
 const express = require("express");
-const authController = require("./controller/authController");
-const authentication = require("./middlewares/authentication");
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+const authController = require('./controller/authController');
 const app = express();
 const port = 3000;
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json())
 
-app.post('/login', authController.login);
+app.use('/users', userRoutes);
+app.use('/products', productRoutes);
 app.post('/register', authController.register);
+app.post('/login', authController.login);
 
 app.listen(port, () => {
     console.log(`Running on port: ${port}`);
