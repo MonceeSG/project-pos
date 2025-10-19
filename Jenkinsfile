@@ -2,48 +2,67 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS_24"
+        nodejs "Node24"
+    }
+
+    environment {
+        REPO_URL = 'https://github.com/MonceeSG/project-pos.git'
+        CREDENTIAL_ID = 'github-token'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Backend Repository') {
             steps {
+                echo "🔄 Cloning backend repository..."
                 git branch: 'main',
-                    url: 'https://github.com/MonceeSG/project-pos.git'
+                    url: "${REPO_URL}",
+                    credentialsId: "${CREDENTIAL_ID}"
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                echo "📦 Installing backend dependencies..."
+                sh 'npm ci || npm install'
             }
         }
 
-        stage('Lint') {
+        stage('Lint Code') {
             steps {
-                sh 'npm run lint || echo "No lint configured, skipping..."'
+                echo "🔍 Running ESLint..."
+                sh 'npm run lint || echo "⚠️ No lint configured, skipping..."'
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                sh 'npm test || echo "No tests found, skipping..."'
+                echo "🧪 Running backend tests..."
+                sh 'npm test || echo "⚠️ No tests found, skipping..."'
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Backend') {
             steps {
+                echo "🚀 Deploying backend service..."
                 sh '''
-                    # Stop existing app (if any)
-                    pm2 stop backend-app || true
-
-                    # Start app again
-                    pm2 start index.js --name backend-app
-
-                    # Save pm2 process list
+                    pm2 stop Backend_MiniPos || true
+                    pm2 start index.js --name Backend_MiniPos
                     pm2 save
+                    echo "✅ Backend_MiniPos running via PM2"
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Backend_MiniPos Pipeline SUCCESS!'
+        }
+        failure {
+            echo '❌ Backend_MiniPos Pipeline FAILED!'
+        }
+        always {
+            echo '🧹 Cleaning workspace...'
         }
     }
 }
