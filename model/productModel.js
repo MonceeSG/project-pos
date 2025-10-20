@@ -54,6 +54,19 @@ class ProductModel {
         });
     }
 
+    static async reduceStock(productId, quantity) {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `UPDATE products SET quantity = quantity - ? WHERE id = ?`,
+        [quantity, productId],
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result);
+        }
+      );
+    });
+  }
+
     // Delete product
     static async deleteProduct(id) {
         return new Promise((resolve, reject) => {
